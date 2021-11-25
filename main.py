@@ -1,16 +1,41 @@
-# This is a sample Python script.
+from dash import dcc
+from dash import html
+from dash import dash
+from dash.dependencies import Input, Output
+import plotly.express as px
 
-# Press ⇧F10 to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+df = px.data.gapminder()
+print(df)
+animations = {
+    'Scatter': px.scatter(
+        df, x="gdpPercap", y="lifeExp", animation_frame="year",
+        animation_group="country", size="pop", color="continent",
+        hover_name="country", log_x=True, size_max=55,
+        range_x=[100, 100000], range_y=[25, 90]),
+    'Bar': px.bar(
+        df, x="continent", y="pop", color="continent",
+        animation_frame="year", animation_group="country",
+        range_y=[0, 4000000000]),
+}
+
+app = dash.Dash(__name__)
+
+app.layout = html.Div([
+    html.P("Select an animation:"),
+    dcc.RadioItems(
+        id='selection',
+        options=[{'label': x, 'value': x} for x in animations],
+        value='Scatter'
+    ),
+    dcc.Graph(id="graph"),
+])
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+@app.callback(
+    Output("graph", "figure"),
+    [Input("selection", "value")])
+def display_animated_graph(s):
+    return animations[s]
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+app.run_server(debug=True)
