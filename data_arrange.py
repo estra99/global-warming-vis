@@ -81,3 +81,11 @@ def arrange_data_gases_temp():
     df_merged_temp_ghg = pd.merge(df_prom_anual_ghg, prom_cambio_temp_mundial, on=['Year'], how='inner')
 
     return df_merged_temp_co2, df_merged_temp_ghg
+
+
+if __name__ == '__main__':
+    df_merged_temp_co2, df_merged_temp_ghg = arrange_data_gases_temp()
+    mask = (df_merged_temp_co2['Year'] > 1970) & (df_merged_temp_co2['Year'] <= 2000)
+    hola = df_merged_temp_co2.loc[mask]
+    print(df_merged_temp_ghg)
+    # print(df_merged_temp_co2.head(100).to_string())
